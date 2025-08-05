@@ -3,324 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Lesson Plan: Word Processing & AI</title>
+    <title>Interactive Lesson Plan: Python Fundamentals & Functions</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Calm Harmony -->
-    <!-- Application Structure Plan: A 'Lesson Flow' dashboard structure. The app is a single, scrollable page divided into cards representing each lesson segment (Intro, Presentation, Activity, etc.). A sticky timeline navigation bar at the top allows the teacher to jump between sections and track progress. A master timer keeps track of the overall 40-minute lesson, while individual timers on cards help pace each activity. This task-oriented structure directly supports the teacher's workflow of delivering the lesson chronologically, turning the static plan into a dynamic presentation and pacing tool. -->
-    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification. | Lesson Timing -> Pace -> Countdown Timer -> Automatic -> Provides overall pacing. | Lesson Sections -> Navigate -> Sticky Timeline Nav -> Click to scroll, highlights on scroll -> Quick orientation. | Text Formatting -> Demonstrate -> Live Text Block + Buttons -> Click buttons to apply CSS -> Interactive demo is more engaging than static explanation. | Lists -> Demonstrate -> Dynamic List Generation -> Click buttons to add items -> Shows list creation in action. | Quiz -> Evaluate -> Question/Answer Cards -> Click to reveal answer -> Controlled, focused evaluation. All visuals are HTML/CSS, no charts needed. -->
+    <!-- Application Structure Plan: A tab-based single-page application is used to organize the lesson plan into logical, digestible sections: 'Overview', 'Lesson Flow', 'Code Examples', and 'Activities & Assessment'. This structure was chosen over a linear document to allow educators to quickly navigate to the specific information they need (e.g., jumping directly to code snippets or the timeline). The 'Lesson Flow' section includes an interactive timeline and a chart visualizing time allocation, which provides a much clearer and more intuitive understanding of the lesson's pacing and structure than a simple text description. This non-linear, task-oriented design enhances usability for lesson preparation and in-class reference. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Lesson Time Allocation -> Goal: Compare -> Viz/Presentation Method: Horizontal Bar Chart -> Interaction: Static visual reference -> Justification: Provides an immediate, at-a-glance understanding of how the 40-minute class period is segmented, which is crucial for teacher planning. -> Library/Method: Chart.js/Canvas.
+        - Report Info: Lesson Structure (Intro, Fundamentals, Functions, etc.) -> Goal: Organize -> Viz/Presentation Method: Interactive Cards/Sections -> Interaction: Click to expand/reveal details -> Justification: Keeps the main view uncluttered while allowing the user to drill down into specific parts of the lesson as needed. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Python Code Snippets -> Goal: Inform/Organize -> Viz/Presentation Method: Code Viewer with Buttons -> Interaction: Click buttons to switch displayed code -> Justification: Consolidates all code into one module, preventing clutter and making it easy to find and review a specific example. -> Library/Method: HTML/CSS/JS.
+    -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .timeline-link.active {
-            background-color: #0d9488; /* teal-600 */
-            color: white;
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { 
+            border-color: #0d9488; 
+            color: #0d9488;
             font-weight: 600;
         }
-        .demo-document {
-            font-family: 'Times New Roman', Times, serif;
-            line-height: 1.6;
-            transition: all 0.3s ease-in-out;
+        .tab-inactive {
+            border-color: transparent;
+            color: #4b5563;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 300px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 300px;
+                max-height: 350px;
+            }
         }
     </style>
 </head>
-<body class="bg-stone-100 text-stone-800">
+<body class="bg-slate-50 text-slate-800">
 
-    <div class="container mx-auto p-4 md:p-8">
-
-        <header class="bg-white p-6 rounded-xl shadow-md mb-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-teal-800">Interactive Lesson Plan</h1>
-                    <p class="text-lg text-stone-600">Word Processing Fundamentals & an Introduction to AI</p>
-                </div>
-                <div class="mt-4 md:mt-0 text-center">
-                    <h2 class="text-lg font-semibold text-stone-700">Total Time Remaining</h2>
-                    <div id="master-timer" class="text-5xl font-bold text-teal-600">40:00</div>
-                </div>
-            </div>
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-800">Interactive Lesson Plan</h1>
+            <p class="text-lg text-slate-600 mt-2">Grade 10: Python Fundamentals & Functions</p>
         </header>
 
-        <nav class="sticky top-4 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-lg mb-8 z-10 flex justify-center items-center flex-wrap gap-2">
-            <a href="#intro" class="timeline-link text-sm md:text-base px-4 py-2 rounded-full transition-all duration-300 hover:bg-teal-100">Intro (5m)</a>
-            <a href="#presentation" class="timeline-link text-sm md:text-base px-4 py-2 rounded-full transition-all duration-300 hover:bg-teal-100">Presentation (15m)</a>
-            <a href="#activity" class="timeline-link text-sm md:text-base px-4 py-2 rounded-full transition-all duration-300 hover:bg-teal-100">Activity (10m)</a>
-            <a href="#quiz" class="timeline-link text-sm md:text-base px-4 py-2 rounded-full transition-all duration-300 hover:bg-teal-100">Quiz (5m)</a>
-            <a href="#wrap-up" class="timeline-link text-sm md:text-base px-4 py-2 rounded-full transition-all duration-300 hover:bg-teal-100">Wrap-up (5m)</a>
-        </nav>
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <nav class="border-b border-slate-200 mb-6">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                    <li class="mr-2">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg tab-active" data-tab="overview">Overview</button>
+                    </li>
+                    <li class="mr-2">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg tab-inactive" data-tab="flow">Lesson Flow</button>
+                    </li>
+                    <li class="mr-2">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg tab-inactive" data-tab="code">Code Examples</button>
+                    </li>
+                    <li>
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg tab-inactive" data-tab="activities">Activities & Assessment</button>
+                    </li>
+                </ul>
+            </nav>
 
-        <main id="lesson-content">
-            <section id="intro" class="lesson-section bg-white p-6 rounded-xl shadow-md mb-8 scroll-mt-24">
-                <h2 class="text-2xl font-bold mb-4 text-teal-700">A. Introduction and Review (5 minutes)</h2>
-                <p class="text-sm text-stone-500 mb-4">This section serves to capture students' attention and introduce the topics for the day. Use the hook to generate curiosity about the tools they use daily.</p>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-semibold text-lg">Hook</h3>
-                        <p class="text-stone-700">Begin by projecting a blank Google Docs screen. Ask the students: "What do you see on this screen? What do you think each button does?"</p>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-lg">Motivation</h3>
-                        <p class="text-stone-700">"Today, we're going to become experts on the basics of word processing without even touching a computer! We'll learn how to format text and create organized lists. We'll also take a quick look at a new and exciting topic: what is AI?"</p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="presentation" class="lesson-section bg-white p-6 rounded-xl shadow-md mb-8 scroll-mt-24">
-                <h2 class="text-2xl font-bold mb-4 text-teal-700">B. Presentation and Discussion (15 minutes)</h2>
-                 <p class="text-sm text-stone-500 mb-4">This section is for direct instruction. Use the interactive examples below to demonstrate key word processing features to the students in a clear and engaging way.</p>
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="font-semibold text-lg mb-2">Word Processing Fundamentals: Interactive Demo</h3>
-                        <p class="mb-4">Use the buttons below to demonstrate text formatting live on the projected screen. This helps students see the immediate effect of each action.</p>
-                        <div class="border rounded-lg p-4 bg-stone-50">
-                            <div id="demo-document-container" class="bg-white shadow-inner p-6 rounded">
-                                <p id="demo-document" class="demo-document text-base text-black text-left">My Favorite Filipino Food is Sinigang. It is a sour and savory soup that is perfect for a rainy day. The sourness comes from tamarind, and it is filled with vegetables and meat.</p>
+            <main>
+                <section id="overview" class="tab-content">
+                    <div class="p-2">
+                        <h2 class="text-2xl font-bold text-teal-700 mb-4">Lesson Overview</h2>
+                        <p class="text-slate-600 mb-6">
+                            This section provides a high-level summary of the lesson, including its core objectives and required materials. The goal is to give educators a quick snapshot of the lesson's purpose and what they'll need to prepare for a 40-minute, computer-free session using an LCD projector.
+                        </p>
+                        <div class="grid md:grid-cols-3 gap-4 text-center">
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <span class="text-3xl">⏱️</span>
+                                <h3 class="font-semibold mt-2">Time Allotment</h3>
+                                <p>40 Minutes</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <span class="text-3xl">🎯</span>
+                                <h3 class="font-semibold mt-2">Grade Level</h3>
+                                <p>Grade 10</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <span class="text-3xl">🖥️</span>
+                                <h3 class="font-semibold mt-2">Materials</h3>
+                                <p>LCD Projector, Whiteboard</p>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                            <div class="space-y-2">
-                                <label class="font-medium text-sm">Font Style</label>
-                                <select id="font-select" class="w-full p-2 border rounded-md">
-                                    <option value="Times New Roman, serif">Serif (Times)</option>
-                                    <option value="Arial, sans-serif">Sans-serif (Arial)</option>
-                                    <option value="Courier New, monospace">Monospace (Courier)</option>
-                                </select>
-                            </div>
-                             <div class="space-y-2">
-                                <label class="font-medium text-sm">Font Size</label>
-                                <select id="size-select" class="w-full p-2 border rounded-md">
-                                    <option value="16px">Normal (16px)</option>
-                                    <option value="24px">Large (24px)</option>
-                                    <option value="32px">Heading (32px)</option>
-                                </select>
-                            </div>
-                             <div class="space-y-2">
-                                <label class="font-medium text-sm">Font Color</label>
-                                <select id="color-select" class="w-full p-2 border rounded-md">
-                                    <option value="#000000">Black</option>
-                                    <option value="#dc2626">Red</option>
-                                    <option value="#1d4ed8">Blue</option>
-                                </select>
-                            </div>
-                             <div class="space-y-2">
-                                <label class="font-medium text-sm">Alignment</label>
-                                <select id="align-select" class="w-full p-2 border rounded-md">
-                                    <option value="left">Left</option>
-                                    <option value="center">Center</option>
-                                    <option value="right">Right</option>
-                                    <option value="justify">Justify</option>
-                                </select>
-                            </div>
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold text-teal-700 mb-3">Learning Objectives</h3>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><strong>Recall</strong> the fundamental concepts of Python programming, including variables, data types, and control flow structures.</li>
+                                <li><strong>Explain</strong> the purpose and syntax of defining and calling a function.</li>
+                                <li><strong>Demonstrate</strong> understanding of parameters, arguments, and return values through a collaborative activity.</li>
+                            </ul>
                         </div>
                     </div>
-                    
-                    <div>
-                        <h3 class="font-semibold text-lg mb-2">Lists Demonstration</h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="font-medium">Bulleted List: Filipino Values</h4>
-                                <ul id="bullet-list" class="list-disc list-inside mt-2 space-y-1 text-stone-700">
-                                    <li>Pakikisama</li>
-                                    <li>Utang na Loob</li>
+                </section>
+
+                <section id="flow" class="tab-content hidden">
+                    <div class="p-2">
+                        <h2 class="text-2xl font-bold text-teal-700 mb-4">Lesson Flow & Pacing</h2>
+                        <p class="text-slate-600 mb-6">
+                            Here you can explore the entire 40-minute lesson, broken down into timed segments. The chart below visualizes the time dedicated to each part of the lesson, helping you manage the class pace effectively. Click on each card to see the detailed teacher activities for that segment.
+                        </p>
+
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold text-teal-700 mb-4 text-center">Time Allocation (Minutes)</h3>
+                            <div class="chart-container">
+                                <canvas id="timeAllocationChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border border-slate-200 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-teal-700">I. Introduction and Review (5 minutes)</h3>
+                                <p class="text-sm text-slate-500 mt-1">Start with a warm-up, project a simple code snippet, and state the lesson's goals and objectives.</p>
+                            </div>
+                            <div class="border border-slate-200 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-teal-700">II. Python Fundamentals Refresher (15 minutes)</h3>
+                                <ul class="list-disc list-inside mt-2 text-slate-600 space-y-1">
+                                    <li><strong>Variables & Data Types (5 min):</strong> Use analogies to explain `int`, `str`, and `bool`.</li>
+                                    <li><strong>Control Flow with if/else (5 min):</strong> Explain conditional logic with a grade-checking example.</li>
+                                    <li><strong>Loops with for/while (5 min):</strong> Differentiate between loops for known and conditional repetitions.</li>
                                 </ul>
                             </div>
-                            <div>
-                                <h4 class="font-medium">Numbered List: How to Make Adobo (Simple)</h4>
-                                <ol id="numbered-list" class="list-decimal list-inside mt-2 space-y-1 text-stone-700">
-                                    <li>Combine soy sauce, vinegar, garlic.</li>
-                                    <li>Add chicken or pork.</li>
-                                    <li>Simmer until tender.</li>
-                                </ol>
+                            <div class="border border-slate-200 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-teal-700">III. Introduction to Python Functions (15 minutes)</h3>
+                                <ul class="list-disc list-inside mt-2 text-slate-600 space-y-1">
+                                    <li><strong>What are Functions? (5 min):</strong> Use the "recipe" analogy and explain `def` and calling a function.</li>
+                                    <li><strong>Parameters & Return Values (10 min):</strong> Explain how to pass data to functions and get results back.</li>
+                                </ul>
+                            </div>
+                            <div class="border border-slate-200 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-teal-700">IV. Collaborative Activity & Wrap-up (5 minutes)</h3>
+                                <p class="text-sm text-slate-500 mt-1">Engage students with a group challenge, recap the main points, and assign homework.</p>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    <div>
-                        <h3 class="font-semibold text-lg mb-2">Introduction to AI</h3>
-                        <p class="text-stone-700">Switch to this topic. Ask the class: "Have you ever asked Siri or Google Assistant a question? Have you noticed how Netflix suggests movies you might like? This is a form of AI!" Then, provide simple, relatable examples like voice assistants, email spam filters, and social media recommendation systems.</p>
+                <section id="code" class="tab-content hidden">
+                    <div class="p-2">
+                        <h2 class="text-2xl font-bold text-teal-700 mb-4">Python Code Examples</h2>
+                        <p class="text-slate-600 mb-6">
+                            This section consolidates all Python code snippets used throughout the lesson. Use the buttons below to switch between different examples. This is designed for easy projection and review during class without needing to navigate through different parts of the lesson plan.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <button class="code-btn bg-teal-600 text-white py-2 px-4 rounded-lg shadow" data-code="variables">Variables</button>
+                            <button class="code-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-lg" data-code="control-flow">If/Else</button>
+                            <button class="code-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-lg" data-code="loops">Loops</button>
+                            <button class="code-btn bg-slate-200 text-slate-700 py-2 px-4 rounded-lg" data-code="functions">Functions</button>
+                        </div>
+                        <div id="code-display" class="bg-slate-800 text-white rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                            <pre><code id="code-content">age = 16
+name = "Juan"
+is_student = True
+
+print(name)
+print(age)</code></pre>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section id="activity" class="lesson-section bg-white p-6 rounded-xl shadow-md mb-8 scroll-mt-24">
-                <h2 class="text-2xl font-bold mb-4 text-teal-700">C. Collaborative Activity (10 minutes)</h2>
-                <p class="text-sm text-stone-500 mb-4">This section outlines the hands-on group activity. Start the timer to help keep the class on schedule while students work on the paper-based task.</p>
-                <div class="text-center mb-4">
-                    <div id="activity-timer" class="text-4xl font-bold text-teal-600">10:00</div>
-                    <button id="start-activity-timer" class="mt-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition">Start Activity Timer</button>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-lg">The Word Processing Worksheet</h3>
-                    <p class="text-stone-700">Divide the class into small groups and distribute a simple worksheet with the following sections:</p>
-                    <ol class="list-decimal list-inside mt-2 space-y-1">
-                        <li>A heading (e.g., "Our Favorite Filipino Snacks") and a blank space below it.</li>
-                        <li>A space to create a bulleted list of "Filipino Values" with a title.</li>
-                        <li>A space to create a numbered list of steps for a simple task (e.g., "How to prepare a simple Filipino dish like Adobo").</li>
-                    </ol>
-                    <p class="mt-2 text-stone-700">Instruct groups to use different colored pens to "format" their text, simulating the use of a word processor.</p>
-                </div>
-            </section>
-
-            <section id="quiz" class="lesson-section bg-white p-6 rounded-xl shadow-md mb-8 scroll-mt-24">
-                <h2 class="text-2xl font-bold mb-4 text-teal-700">D. Quick Quiz and Evaluation (5 minutes)</h2>
-                <p class="text-sm text-stone-500 mb-4">Use this interactive quiz to quickly assess student comprehension. Display one question at a time to maintain focus.</p>
-                <div id="quiz-container" class="bg-stone-50 p-6 rounded-lg text-center min-h-[150px] flex flex-col justify-center items-center">
-                    <!-- Quiz content will be injected here -->
-                </div>
-                <div class="flex justify-center gap-4 mt-4">
-                    <button id="prev-question" class="px-4 py-2 bg-stone-300 text-stone-800 rounded-lg hover:bg-stone-400 transition">Previous</button>
-                    <button id="reveal-answer" class="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition">Reveal Answer</button>
-                    <button id="next-question" class="px-4 py-2 bg-stone-300 text-stone-800 rounded-lg hover:bg-stone-400 transition">Next</button>
-                </div>
-            </section>
-
-            <section id="wrap-up" class="lesson-section bg-white p-6 rounded-xl shadow-md scroll-mt-24">
-                <h2 class="text-2xl font-bold mb-4 text-teal-700">E. Wrap-up and Assignment (5 minutes)</h2>
-                 <p class="text-sm text-stone-500 mb-4">Conclude the lesson by summarizing the key takeaways and presenting the homework assignment clearly on the screen.</p>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-semibold text-lg">Summary</h3>
-                        <p class="text-stone-700">Briefly recap the key takeaway: "Hardware, software, and the operating system are a team. Hardware provides the physical power, software provides the instructions, and the OS makes sure everyone works together smoothly." (Note: This summary seems to be from a previous lesson plan, a better summary would be: "Today we learned that word processors are powerful tools for creating and styling documents, and that AI is already a part of our daily lives in many helpful ways.")</p>
+                <section id="activities" class="tab-content hidden">
+                     <div class="p-2">
+                        <h2 class="text-2xl font-bold text-teal-700 mb-4">Activities & Assessment</h2>
+                        <p class="text-slate-600 mb-6">
+                            This section outlines the interactive and assessment components of the lesson. It includes a collaborative group challenge to reinforce learning in class, a take-home assignment to assess individual understanding, and the methods for both formative and summative evaluation.
+                        </p>
+                        <div class="space-y-6">
+                            <div class="bg-slate-100 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold text-teal-700 mb-2">🤝 Group Challenge (2 minutes)</h3>
+                                <p class="text-slate-600"><strong>Problem:</strong> "Write a function called `is_even` that takes a number as a parameter and prints if the number is even or odd."</p>
+                                <p class="text-slate-600 mt-2">Students will discuss and solve this in small groups, then a volunteer presents the solution. This encourages peer learning and application of the concepts.</p>
+                            </div>
+                            <div class="bg-slate-100 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold text-teal-700 mb-2">📝 Homework Assignment</h3>
+                                <p class="text-slate-600">"On a piece of paper, write a simple function that calculates the area of a rectangle. The function should take two parameters: `length` and `width`, and it should `return` the calculated area."</p>
+                            </div>
+                            <div class="bg-slate-100 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold text-teal-700 mb-2">📊 Assessment Methods</h3>
+                                <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                    <li><strong>Formative:</strong> Teacher observation during the interactive Q&A sessions and the group challenge.</li>
+                                    <li><strong>Summative:</strong> The homework assignment will serve as a simple check for individual understanding of function definition, parameters, and return values.</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-semibold text-lg">Assignment</h3>
-                        <p class="text-stone-700">"Imagine you are writing an essay for another subject. On a sheet of paper, design the title of your essay and the first paragraph. Use different colors to show how you would format it (e.g., one color for bold, another for a different font). Then, create a bulleted list of 5 key points you would discuss in the essay."</p>
-                    </div>
-                </div>
-            </section>
-        </main>
+                </section>
+            </main>
+        </div>
+        
+        <footer class="text-center mt-8 text-sm text-slate-500">
+            <p>Interactive Lesson Plan | Generated 2025</p>
+        </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const masterTimerEl = document.getElementById('master-timer');
-            const activityTimerEl = document.getElementById('activity-timer');
-            const startActivityBtn = document.getElementById('start-activity-timer');
-            
-            let masterTime = 40 * 60;
-            let activityTime = 10 * 60;
-            let masterInterval;
-            let activityInterval;
+        const tabs = document.querySelectorAll('[data-tab]');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const codeButtons = document.querySelectorAll('.code-btn');
+        const codeContent = document.getElementById('code-content');
 
-            const formatTime = (seconds) => {
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            };
+        const codeSnippets = {
+            variables: `age = 16
+name = "Juan"
+is_student = True
 
-            const startMasterTimer = () => {
-                masterInterval = setInterval(() => {
-                    masterTime--;
-                    masterTimerEl.textContent = formatTime(masterTime);
-                    if (masterTime <= 0) {
-                        clearInterval(masterInterval);
-                        masterTimerEl.textContent = "00:00";
+print(name)
+print(age)`,
+            'control-flow': `grade = 95
+if grade >= 75:
+    print("Passed")
+else:
+    print("Failed")`,
+            loops: `# For Loop Example
+for number in range(3):
+    print(number)
+
+# While Loop Example
+count = 0
+while count < 3:
+    print("Hello")
+    count = count + 1`,
+            functions: `# Defining and calling a simple function
+def greet():
+    print("Welcome to our Python class!")
+
+greet()
+
+# Function with parameters and return value
+def add_numbers(num1, num2):
+    result = num1 + num2
+    return result
+
+sum_value = add_numbers(10, 5)
+print(sum_value)`
+        };
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+
+                tabs.forEach(t => {
+                    t.classList.remove('tab-active');
+                    t.classList.add('tab-inactive');
+                });
+
+                tab.classList.add('tab-active');
+                tab.classList.remove('tab-inactive');
+
+                tabContents.forEach(content => {
+                    if (content.id === target) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
                     }
-                }, 1000);
-            };
-
-            startActivityBtn.addEventListener('click', () => {
-                if (activityInterval) clearInterval(activityInterval);
-                activityTime = 10 * 60;
-                activityTimerEl.textContent = formatTime(activityTime);
-                activityInterval = setInterval(() => {
-                    activityTime--;
-                    activityTimerEl.textContent = formatTime(activityTime);
-                    if (activityTime <= 0) {
-                        clearInterval(activityInterval);
-                        activityTimerEl.textContent = "Time's Up!";
-                    }
-                }, 1000);
-                startActivityBtn.disabled = true;
-                startActivityBtn.textContent = "Timer Running";
+                });
             });
-            
-            startMasterTimer();
-
-            const demoDoc = document.getElementById('demo-document');
-            const fontSelect = document.getElementById('font-select');
-            const sizeSelect = document.getElementById('size-select');
-            const colorSelect = document.getElementById('color-select');
-            const alignSelect = document.getElementById('align-select');
-
-            const updateDemoDoc = () => {
-                demoDoc.style.fontFamily = fontSelect.value;
-                demoDoc.style.fontSize = sizeSelect.value;
-                demoDoc.style.color = colorSelect.value;
-                demoDoc.style.textAlign = alignSelect.value;
-            };
-
-            fontSelect.addEventListener('change', updateDemoDoc);
-            sizeSelect.addEventListener('change', updateDemoDoc);
-            colorSelect.addEventListener('change', updateDemoDoc);
-            alignSelect.addEventListener('change', updateDemoDoc);
-
-            const quizData = [
-                { question: "What formatting tool would you use to make a title stand out?", answer: "Bold, larger font size, different color, or centering." },
-                { question: "Would you use a bulleted list or a numbered list to write down steps for a recipe?", answer: "Numbered list, because the order of the steps is important." },
-                { question: "Give one example of AI you have seen in your daily life.", answer: "Examples: Voice assistants (Siri, Google), movie recommendations (Netflix), or spam filters in email." }
-            ];
-
-            let currentQuestionIndex = 0;
-            const quizContainer = document.getElementById('quiz-container');
-            const revealBtn = document.getElementById('reveal-answer');
-            const nextBtn = document.getElementById('next-question');
-            const prevBtn = document.getElementById('prev-question');
-
-            const showQuestion = () => {
-                quizContainer.innerHTML = `<p class="text-xl font-medium">${quizData[currentQuestionIndex].question}</p>`;
-                revealBtn.textContent = "Reveal Answer";
-                revealBtn.disabled = false;
-            };
-
-            revealBtn.addEventListener('click', () => {
-                quizContainer.innerHTML = `<p class="text-lg text-teal-800 font-semibold">${quizData[currentQuestionIndex].answer}</p>`;
-                revealBtn.textContent = "Answer Revealed";
-                revealBtn.disabled = true;
+        });
+        
+        codeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const codeKey = button.getAttribute('data-code');
+                codeContent.textContent = codeSnippets[codeKey];
+                
+                codeButtons.forEach(btn => {
+                    btn.classList.remove('bg-teal-600', 'text-white');
+                    btn.classList.add('bg-slate-200', 'text-slate-700');
+                });
+                button.classList.add('bg-teal-600', 'text-white');
+                button.classList.remove('bg-slate-200', 'text-slate-700');
             });
+        });
 
-            nextBtn.addEventListener('click', () => {
-                currentQuestionIndex = (currentQuestionIndex + 1) % quizData.length;
-                showQuestion();
-            });
-
-            prevBtn.addEventListener('click', () => {
-                currentQuestionIndex = (currentQuestionIndex - 1 + quizData.length) % quizData.length;
-                showQuestion();
-            });
-
-            showQuestion();
-            
-            const sections = document.querySelectorAll('.lesson-section');
-            const navLinks = document.querySelectorAll('.timeline-link');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        navLinks.forEach(link => {
-                            link.classList.remove('active');
-                            if (link.getAttribute('href').substring(1) === entry.target.id) {
-                                link.classList.add('active');
+        const ctx = document.getElementById('timeAllocationChart').getContext('2d');
+        const timeAllocationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Objectives', 'Intro & Review', 'Fundamentals', 'Functions', 'Activity & Wrap-up'],
+                datasets: [{
+                    label: 'Time in Minutes',
+                    data: [2, 5, 15, 15, 3],
+                    backgroundColor: [
+                        'rgba(15, 118, 110, 0.6)',
+                        'rgba(13, 148, 136, 0.6)',
+                        'rgba(45, 212, 191, 0.6)',
+                        'rgba(94, 234, 212, 0.6)',
+                        'rgba(20, 184, 166, 0.6)'
+                    ],
+                    borderColor: [
+                        '#0f766e',
+                        '#0d9488',
+                        '#2dd4bf',
+                        '#5eead4',
+                        '#14b8a6'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.raw} minutes`;
                             }
-                        });
+                        }
                     }
-                });
-            }, { rootMargin: "-50% 0px -50% 0px", threshold: 0 });
-
-            sections.forEach(section => observer.observe(section));
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    document.querySelector(link.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Minutes'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
         });
     </script>
 </body>
